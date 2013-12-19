@@ -161,5 +161,3 @@
 	<li>FormValidate还没有任何的css代码，DEMO的只做参考，后续应该会做几套不同风格的UI界面提供使用。</li>
 	<li>...</li>
 </ul>
-<p>你可以<a href="/demo/FormValidate" target="_blank">点击这里</a>查看简单的DEMO，或者<a href="/demo/FormValidate/FormValidate.zip" target="_blank">点击下载</a>DEMO</p>
-<p>文章写的不好，如有问题或建议欢迎指教。</p>
