@@ -72,7 +72,6 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
         if(typeof(name)!="undefined"&&typeof(_this.json[name])!="undefined"){
             _this.msg(obj,"def",typeof(_this.json[name]['default'])!="undefined"?_this.json[name]['default']:"");   //提示default信息
         };
-
     }).bind("focusout",function(e){
         var obj = $(e.target);
         var name=obj.attr("name");
@@ -116,7 +115,7 @@ FormValidate.prototype.regex = {
     zipcode:/^\d{6}$/,                     //邮编
     phone:/^(13|15|18|14)[0-9]{9}$/,               //手机
     ip4:/^(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)$/,  //ip地址
-    notempty:/^\S+$/,                      //非空
+    notempty:/^(.|\n)+$/,                      //非空
     picture:/(.*)\.(jpg|bmp|gif|ico|pcx|jpeg|tif|png|raw|tga)$/,   //图片
     rar:/(.*)\.(rar|zip|7zip|tgz)$/,                               //压缩文件
     qq:/^[1-9]?[0-9]{6,10}$/,               //QQ号码
