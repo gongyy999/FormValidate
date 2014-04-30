@@ -2,7 +2,7 @@
  /*
  * 表单验证对象构造函数
  * @author GongYunyun(gongyy999@126.com)
- * @date    2013-11-29 11:11:24
+ * @date    2014-04-30 11:03
  * @version V2.4
   +----------------------------------------------------------
  * @param json   --验证规则信息
@@ -34,7 +34,7 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
             arr={};
         for (var key in json) {
             input[key] = _this.obj.find(":input[name=" + key + "]");
-            if(typeof(input[key][0])=="undefined"){
+            if(input[key].length===0){
                 continue ;
             };
             if(!_this.verification(input[key],key)){    //常规验证
@@ -57,7 +57,7 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
             };
         };
         
-        if (status && typeof _this.callBack == "function") {
+        if (status && typeof _this.callBack === "function") {
             _this.callBack(arr);
         } else if (status) {
             return true;
