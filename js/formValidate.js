@@ -72,7 +72,6 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
         if(typeof(name)!="undefined"&&typeof(_this.json[name])!="undefined"){
             _this.msg(obj,"def",typeof(_this.json[name]['default'])!="undefined"?_this.json[name]['default']:"");   //提示default信息
         };
-
     }).bind("focusout",function(e){
         var obj = $(e.target);
         var name=obj.attr("name");
