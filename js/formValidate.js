@@ -2,8 +2,8 @@
  /*
  * 表单验证对象构造函数
  * @author GongYunyun(gongyy999@126.com)
- * @date    2014-04-30 11:03
- * @version V2.4
+ * @date    2014-09-14 11:03
+ * @version V2.5
   +----------------------------------------------------------
  * @param json   --验证规则信息
  * @param obj    --验证对象
@@ -19,7 +19,7 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
     this.json=json ||[];
     this.obj=$(obj) ||$("body");
     this.callBack=callBack || null;
-    this.emailListDom=emailAid?$(emailAid):$("#mail_list");  //邮箱提示容器
+    this.emailListDom=emailAid?$(emailAid):$("#emailList");  //邮箱提示容器
     this.pwdStatusDom=emailAid?$(pwdAid):$("#PwdStatus");  //密码提示容器
 
     this.placeholderClass="placeholder";    //兼容性placeholder实现时，默认输入框class样式继承
@@ -31,6 +31,7 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
     this.obj.submit(function() {
         var status = true,
             input=[],
+            focusStatus=false,
             arr={};
         for (var key in json) {
             input[key] = _this.obj.find(":input[name=" + key + "]");
@@ -39,12 +40,26 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
             };
             if(!_this.verification(input[key],key)){    //常规验证
                 status=false;
-                if(_this.breakO&&_this.json[key]['must']!==false){  //是否中止
-                    if(input[key].val()==""){
+                    
+                
+                //焦点定位至首个错误表单对象
+                if(!focusStatus){
+                    if(input[key].is(":hidden")){   //对象不可见，通过滚动条定位
+                        var tempInput=$('<input>',{'type':'text'}).insertAfter(input[key]).focus();
+                        tempInput.remove();
+                        
+                    }else{
                         input[key].focus();
                     }
+                    focusStatus=true;   
+
+                }
+                
+                
+                if(_this.breakO&&_this.json[key]['must']!==false){  //是否中止
                     break;
                 };
+                
             };
             arr[key]=input[key].val();
         };
@@ -69,11 +84,12 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
     this.obj.bind("focusin",function(e){
         var obj = $(e.target);
         var name=obj.attr("name");
-        if(typeof(name)!="undefined"&&typeof(_this.json[name])!="undefined"){
+        if(typeof(name)!="undefined"&&typeof(_this.json[name])!="undefined"&&_this.json[name]['default']!=""){
             _this.msg(obj,"def",typeof(_this.json[name]['default'])!="undefined"?_this.json[name]['default']:"");   //提示default信息
         };
     }).bind("focusout",function(e){
         var obj = $(e.target);
+        
         var name=obj.attr("name");
         if(typeof(name)!="undefined"&&typeof(_this.json[name])!="undefined"&&!_this.json[name]['emailAid']){
             _this.verification(obj,name);   //进行验证
@@ -87,6 +103,7 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
         this.json[key]["default"]=typeof(this.json[key]["default"])=="undefined"?"":this.json[key]["default"];
         this.json[key]["error"]=typeof(this.json[key]["error"])=="undefined"?"该项有误":this.json[key]["error"];
         this.json[key]["right"]=typeof(this.json[key]["right"])=="undefined"?"可用":this.json[key]["right"];
+        
 
         var input = this.obj.find(":input[name="+key+ "]");
         if(this.json[key]['default']!=""){
@@ -95,7 +112,12 @@ function FormValidate(json,obj,callBack,breakO,emailAid,pwdAid){
         if(!this.placeholder&&typeof(input.attr("placeholder"))!="undefined"){
             this.placeholderFn(input);  //placeholder属性扩展
         };
-
+        
+        //把自定义容器属性写入表单对象
+        if(typeof this.json[key]['tipDom']!="undefined"){
+            input.attr("data-tip",this.json[key]['tipDom']);
+        }
+        
         if(this.json[key]["emailAid"]&&typeof(this.emailListDom[0])!="undefined"){    //email类型输入辅助
             this.emailList(input,key);
         };
@@ -131,7 +153,13 @@ FormValidate.prototype.regex = {
 
 
 FormValidate.prototype.msg=function(obj, status, msg){
-    var dom=obj.attr("type")=="radio"?obj.parent("label").siblings(".validateMsg"):obj.nextAll(".validateMsg")
+    var dom=obj.attr("data-tip");
+    if(typeof dom!="undefined"){
+        dom=$(dom);
+    }else{
+        dom=obj.attr("type")=="radio"?obj.parent("label").siblings(".validateMsg"):obj.nextAll(".validateMsg");
+    }
+    
     if (status === "def") {  //显示默认信息
         dom.attr("class","validateMsg").html(msg);
         return true;
@@ -165,6 +193,7 @@ FormValidate.prototype.verification=function(input,i){
                 break;
             };
         };
+        //typeof this.json[i]['tipDom']!="undefined"?$(this.json[i]['tipDom']):input
         this.msg(input,this.result.status,this.result.msg);
         return this.result.status;
     }
@@ -173,9 +202,10 @@ FormValidate.prototype.verification=function(input,i){
     value=input.val()==input.attr("placeholder")?"":input.val();
     value = $.trim(value);
 
-    if(input.is(":hidden")){ //容器隐藏跳过验证
-        return true;
-    }else if (value == ""&&this.json[i]['must']!==true) {  //为空且非必填
+//    if(input.is(":hidden")){ //容器隐藏跳过验证
+//        return true;
+//    }else 
+    if (value == ""&&this.json[i]['must']!==true) {  //为空且非必填
         this.msg(input,"def",this.json[i]['default']);
         return true;
     } else if(typeof (this.json[i]["reg"]) === "function"){ //自定义function验证
@@ -493,5 +523,3 @@ FormValidate.prototype.pwdExp=function(val){
     };
 
 };
-
-
